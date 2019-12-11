@@ -1,0 +1,93 @@
+$user = "Victor"
+$pass = [System.Web.Security.FormsAuthentication]::HashPasswordForStoringInConfigFile("andel2019", "SHA1")
+
+$user1 = Read-Host "nombre usuario"
+$pass1 = Read-Host "password usuario"
+
+$pass2 = [System.Web.Security.FormsAuthentication]::HashPasswordForStoringInConfigFile($pass1, "SHA1")
+
+if($user1 -eq $user -and $pass -eq $pass2)
+{
+    $web = Read-Host "URL de la web"
+    $web > URL.txt
+
+    $ErrorActionPreference = "SilentlyContinue"
+
+    foreach($URL in gc URL.txt)
+    {
+        $web1 = Invoke-WebRequest $URL -ErrorVariable ErrorWeb
+
+        if ($ErrorWeb)
+        {
+            $CodigoC = @"
+ 
+    using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+ 
+    public static class User32
+    {
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+            public static extern bool MessageBox(
+                IntPtr hWnd,     /// Parent window handle 
+                String text,     /// Text message to display
+                String caption,  /// Window caption
+                int options);    /// MessageBox type
+    }
+ 
+"@
+ 
+Add-Type -TypeDefinition $CodigoC -ErrorAction SilentlyContinue
+ 
+[User32]::MessageBox(0,"La pagina web no ha sido encontrada","¡ERROR!",0)
+        }
+        else
+        {
+            $CodigoC = @"
+ 
+    using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+ 
+    public static class User32
+    {
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+            public static extern bool MessageBox(
+                IntPtr hWnd,     /// Parent window handle 
+                String text,     /// Text message to display
+                String caption,  /// Window caption
+                int options);    /// MessageBox type
+    }
+ 
+"@
+ 
+Add-Type -TypeDefinition $CodigoC -ErrorAction SilentlyContinue
+ 
+[User32]::MessageBox(0,"La pagina web ha sido encontrada","¡EXITO!",0)
+        }
+    }
+}
+else
+{
+    $CodigoC = @"
+ 
+    using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+ 
+    public static class User32
+    {
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+            public static extern bool MessageBox(
+                IntPtr hWnd,     /// Parent window handle 
+                String text,     /// Text message to display
+                String caption,  /// Window caption
+                int options);    /// MessageBox type
+    }
+ 
+"@
+ 
+Add-Type -TypeDefinition $CodigoC -ErrorAction SilentlyContinue
+ 
+[User32]::MessageBox(0,"Usuario o contraseña erroneos","¡ERROR!",0)
+}
